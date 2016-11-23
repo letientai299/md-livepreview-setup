@@ -1,0 +1,19 @@
+{
+  "name": "md-livepreview-setup",
+  "version": "1.0.0",
+  "repository": {
+    "url": "git@github.com:letientai299/md-livepreview-setup.git",
+    "type": "git"
+  },
+  "author": "Le Tien Tai <letientai299@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "gulp"
+  },
+  "devDependencies": {
+    "highlight.js": "^9.8.0",
+    "marked": "^0.3.6",
+    "browser-sync": "^2.18.2",
+    "gulp": "^3.9.1"
+  }
+}
