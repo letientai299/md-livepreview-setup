@@ -54,7 +54,6 @@ gulp.task('serve', function() {
     server: "./"
   });
 
-  console.log("fadf");
   gulp.watch(["*.md", "*.js", "*.html"]).on('change', function() {
     renderMarkdown()
     browserSync.reload()
