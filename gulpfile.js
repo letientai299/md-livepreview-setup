@@ -1,4 +1,6 @@
-const WORKING_FILE = 'readme.md'
+const configFile = './config.json';
+const config = require(configFile);
+const inputFile = config.input;
 
 const gulp = require('gulp');
 const browserSync = require('browser-sync').create();
@@ -21,11 +23,11 @@ gulp.task('serve', function () {
   browserSync.init({
     server: {
       baseDir: './',
-      index: WORKING_FILE + '.html'
+      index: inputFile + '.html'
     }
   });
 
-  gulp.watch(WORKING_FILE, build);
+  gulp.watch(inputFile, build);
   gulp.watch("*.html", browserSync.reload);
   gulp.watch('lib/*.css').on('change', (e) => {
     gulp.src(e.path)
@@ -41,7 +43,7 @@ const TEMPLATE = `
     <link rel="stylesheet" href="/lib/highlight.default.min.css">
     <link rel="stylesheet" href="/lib/github-markdown.css">
     <link rel="stylesheet" href="/lib/custom.css">
-    <title>${WORKING_FILE}</title>
+    <title>${inputFile}</title>
     </style>
   </head>
   <body>
@@ -52,8 +54,9 @@ const TEMPLATE = `
 </html>`
 
 function build() {
-  gulp.src(WORKING_FILE)
+  gulp.src(inputFile)
     .pipe(renderMarkdown())
+    .pipe(htmlmin())
     .pipe(gulp.dest('./'));
 }
 
