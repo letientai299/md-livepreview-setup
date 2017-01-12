@@ -1,61 +1,72 @@
-var fs = require('fs')
-var gulp = require('gulp');
-var browserSync = require('browser-sync').create();
-var marked = require('marked');
+const WORKING_FILE = 'readme.md'
+
+const gulp = require('gulp');
+const browserSync = require('browser-sync').create();
+const marked = require('marked');
+const through = require('through2');
+const htmlmin = require('gulp-htmlmin');
+
 
 marked.setOptions({
-  highlight: function(code) {
+  highlight: function (code) {
     return require('highlight.js').highlightAuto(code).value;
   }
 });
 
-var WORKING_FILE = 'readme.md'
-var OUTPUT_FILE = 'index.html'
+gulp.task('default', ['build', 'serve']);
 
-function renderMarkdown() {
-  var content = fs.readFileSync(WORKING_FILE, 'utf-8')
-  var html = marked(content)
-  var appended_html =
-    `
+gulp.task('build', build);
+
+gulp.task('serve', function () {
+  browserSync.init({
+    server: {
+      baseDir: './',
+      index: WORKING_FILE + '.html'
+    }
+  });
+
+  gulp.watch(WORKING_FILE, build);
+  gulp.watch("*.html", browserSync.reload);
+  gulp.watch('lib/*.css').on('change', (e) => {
+    gulp.src(e.path)
+      .pipe(browserSync.stream());
+  });
+});
+
+const TEMPLATE = `
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/github-markdown-css/2.4.1/github-markdown.css" type="text/css" charset="utf-8">
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.8.0/styles/default.min.css">
+    <link rel="stylesheet" href="/lib/highlight.default.min.css">
+    <link rel="stylesheet" href="/lib/github-markdown.css">
+    <link rel="stylesheet" href="/lib/custom.css">
     <title>${WORKING_FILE}</title>
-    <style>
-      .markdown-body {
-        box-sizing: border-box;
-        min-width: 200px;
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 45px;
-    }
     </style>
   </head>
   <body>
     <div class='markdown-body'>
-      ${html}
+      {{content}}
     </div>
   </body>
-</html>
-`
-  fs.writeFileSync(OUTPUT_FILE, appended_html, 'utf-8')
+</html>`
+
+function build() {
+  gulp.src(WORKING_FILE)
+    .pipe(renderMarkdown())
+    .pipe(gulp.dest('./'));
 }
 
-gulp.task('default', ['serve'], function() {
-  renderMarkdown()
-});
 
-gulp.task('serve', function() {
-  browserSync.init({
-    server: "./"
+function renderMarkdown() {
+  var stream = through.obj(function (file, enc, cb) {
+    let html = marked(Buffer.from(file.contents, enc).toString());
+    file.path = file.path + ".html";
+    file.contents = new Buffer(TEMPLATE.replace('{{content}}', html));
+    this.push(file);
+    cb();
   });
 
-  gulp.watch(["*.md", "*.js", "*.html"]).on('change', function() {
-    renderMarkdown()
-    browserSync.reload()
-  })
-})
+  // returning the file stream
+  return stream;
+}

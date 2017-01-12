@@ -4,8 +4,8 @@ Markdown Live Preview Setup
 A Do-it-yourself setup for editing markdown with any editor and preview right in
 your browser.
 
-Why
----
+Why?
+----
 
 - Vim doesn't support live preview.
 - I don't like vim-binding in others editors.
@@ -23,6 +23,7 @@ Example
 --------
 
 List of npm packages:
+
 - [Gulp](https://gulpjs.com)
 - [Browsersync](https://www.browsersync.io/)
 - [highlightjs](https://highlightjs.org/)
@@ -40,6 +41,7 @@ def foo(n: int) -> str:
   pass
 ```
 
-And finally, the rendered result:
+And finally, the rendered result (from old version of this README):
 
 ![Sample image](sample.png)
+

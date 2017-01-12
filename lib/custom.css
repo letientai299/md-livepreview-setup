@@ -1,0 +1,9 @@
+ .markdown-body {
+   max-width: 600px;
+   margin: 0 auto;
+ }
+
+ .markdown-body img {
+   margin: auto;
+   display: block;
+ }
